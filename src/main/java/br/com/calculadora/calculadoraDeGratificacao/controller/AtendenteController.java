@@ -2,10 +2,8 @@ package br.com.calculadora.calculadoraDeGratificacao.controller;
 
 import br.com.calculadora.calculadoraDeGratificacao.dto.request.DadosAtualizacaoAtendente;
 import br.com.calculadora.calculadoraDeGratificacao.dto.request.DadosCadastroAtendente;
-import br.com.calculadora.calculadoraDeGratificacao.dto.response.DadosDetalhamentoAtendente;
 import br.com.calculadora.calculadoraDeGratificacao.dto.response.DadosListagemAtendente;
-import br.com.calculadora.calculadoraDeGratificacao.model.Atendente;
-import br.com.calculadora.calculadoraDeGratificacao.repository.AtendenteRepository;
+import br.com.calculadora.calculadoraDeGratificacao.service.AtendenteService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,36 +18,39 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class AtendenteController {
 
     @Autowired
-    private AtendenteRepository atendenteRepository;
+    private AtendenteService atendenteService;
 
     @PostMapping
     @Transactional
     public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroAtendente dados, UriComponentsBuilder uriComponentsBuilder) {
-        var atendente = new Atendente(dados);
-        var uri = uriComponentsBuilder.path("atendente/{id}").buildAndExpand(atendente.getId()).toUri();
-        this.atendenteRepository.save(atendente);
-        return ResponseEntity.ok(new DadosDetalhamentoAtendente(atendente));
+        var atendenteDto = this.atendenteService.cadastrar(dados);
+        var uri = uriComponentsBuilder.path("atendente/{id}").buildAndExpand(atendenteDto.id()).toUri();
+        return ResponseEntity.ok(atendenteDto);
     }
 
     @GetMapping
     public ResponseEntity<Page<DadosListagemAtendente>> listar(Pageable paginacao) {
-        var page = this.atendenteRepository.findAllByAtivoTrue(paginacao).map(DadosListagemAtendente::new);
+        var page = this.atendenteService.listarTodos(paginacao);
         return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity buscarPorId(@PathVariable Long id) {
+        var atendenteDto = this.atendenteService.buscarPorId(id);
+        return ResponseEntity.ok(atendenteDto);
     }
 
     @PutMapping
     @Transactional
     public ResponseEntity atualizar(@RequestBody @Valid DadosAtualizacaoAtendente dados) {
-        var atendente = this.atendenteRepository.getReferenceById(dados.id());
-        atendente.atualizarDados(dados);
-        return ResponseEntity.ok(new DadosDetalhamentoAtendente(atendente));
+        var atendenteDto = this.atendenteService.atualizar(dados);
+        return ResponseEntity.ok(atendenteDto);
     }
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity deletar(@PathVariable Long id){
-        var atendente = this.atendenteRepository.getReferenceById(id);
-        atendente.desativar();
+    public ResponseEntity deletar(@PathVariable Long id) {
+        this.atendenteService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

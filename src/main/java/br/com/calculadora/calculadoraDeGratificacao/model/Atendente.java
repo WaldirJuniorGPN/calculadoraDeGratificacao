@@ -1,6 +1,5 @@
 package br.com.calculadora.calculadoraDeGratificacao.model;
 
-import br.com.calculadora.calculadoraDeGratificacao.dto.request.DadosAtualizacaoAtendente;
 import br.com.calculadora.calculadoraDeGratificacao.dto.request.DadosCadastroAtendente;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
