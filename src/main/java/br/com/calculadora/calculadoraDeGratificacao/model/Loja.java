@@ -1,5 +1,7 @@
 package br.com.calculadora.calculadoraDeGratificacao.model;
 
+import br.com.calculadora.calculadoraDeGratificacao.dto.request.DadosCadastroLoja;
+import br.com.calculadora.calculadoraDeGratificacao.dto.response.DadosAtualizacaoLoja;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,5 +25,22 @@ public class Loja {
     private Double vendasMes;
 
     @OneToMany(mappedBy = "loja")
-    private List<Funcionario> funcionarios = new ArrayList<>();
+    private List<Atendente> atendentes = new ArrayList<>();
+
+    private boolean ativo;
+
+    public Loja(DadosCadastroLoja dados) {
+        this.nome = dados.nome();
+        this.ativo = true;
+    }
+
+    public void atualizarDados(DadosAtualizacaoLoja dados) {
+        if (dados.nome() != null) {
+            this.nome = dados.nome();
+        }
+    }
+
+    public void desativar() {
+        this.ativo = false;
+    }
 }

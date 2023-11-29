@@ -18,6 +18,10 @@ public class Atendente extends Funcionario {
     private Long id;
     private boolean ativo;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "loja_id")
+    private Loja loja;
+
     public Atendente(DadosCadastroAtendente dados) {
         super(dados.nome(), dados.salario());
         this.ativo = true;
