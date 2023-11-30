@@ -27,6 +27,10 @@ public class Loja {
     @OneToMany(mappedBy = "loja")
     private List<Atendente> atendentes = new ArrayList<>();
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "comissao_id")
+    private Comissao comissao;
+
     private boolean ativo;
 
     public Loja(DadosCadastroLoja dados) {
